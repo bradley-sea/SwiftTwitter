@@ -38,7 +38,6 @@ class UserTimeLineViewController: UIViewController, UITableViewDataSource,UITabl
                 })
             }
         })
-        
         self.networkController.fetchUserImageForURL(self.user.profileBackgroundImageURL, completionHandler: { (image) -> (Void) in
             
                 self.backgroundImageView.image = image

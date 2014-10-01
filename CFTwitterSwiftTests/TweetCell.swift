@@ -30,6 +30,7 @@ class TweetCell: UITableViewCell {
 
         //println(cellTweet.text)
         self.tweetTextLabel.text = cellTweet.text
+        self.userLabel.text = cellTweet.userName
         self.tweetTextLabel.preferredMaxLayoutWidth = self.frame.width - 20
        self.tweetTextLabel.layoutIfNeeded()
     }

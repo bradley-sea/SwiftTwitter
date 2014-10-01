@@ -47,6 +47,11 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource, UITab
         //calling reload here because of a bug with iOS8 self sizing tableivew cells
         self.tableView.reloadData()
     }
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+         //calling reload here because of a bug with iOS8 self sizing tableivew cells
+        self.tableView.reloadData()
+    }
     
     func fetchMochTweets () {
         let path = NSBundle.mainBundle().pathForResource("tweet", ofType: "json") as String?
@@ -87,7 +92,18 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource, UITab
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("TweetCell", forIndexPath: indexPath) as TweetCell
+        let tweet = self.tweets[indexPath.row]
         cell.setupCell(self.tweets[indexPath.row])
+        ++cell.tag
+        let tag = cell.tag
+        //cell.userImageView.image = nil
+        if tweet.tweetAvatarImage != nil {
+            cell.userImageView.image = tweet.tweetAvatarImage
+        } else {
+            self.networkController.fetchUserImageForURL(tweet.profileImgURL, completionHandler: { (image) -> (Void) in
+                cell.userImageView.image = image
+            })
+        }
         return cell
     }
     
@@ -103,6 +119,6 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource, UITab
             destinationViewController.selectedReplyUserID = tweet.inReplyUserIDString
     }
         self.navigationController?.pushViewController(destinationViewController, animated: true)
-        self.tableView.reloadData()
+       
     }
 }

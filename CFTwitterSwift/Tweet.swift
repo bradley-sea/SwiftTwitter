@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 CodeFellows. All rights reserved.
 //
 
-import Foundation
-
+import UIKit
 
 class Tweet {
     
@@ -20,6 +19,7 @@ class Tweet {
     let profileImgURL : String
     let userID : Int
     let inReplyUserIDString : String?
+    var tweetAvatarImage : UIImage?
     
     init(jsonDictionary : NSDictionary) {
         self.text = jsonDictionary["text"] as String
