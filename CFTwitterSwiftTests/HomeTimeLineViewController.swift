@@ -10,7 +10,7 @@ import UIKit
 import Social
 import Accounts
 
-class HomeTimeLineViewController: UIViewController, UITableViewDataSource {
+class HomeTimeLineViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     var tweets = [Tweet]()
@@ -18,46 +18,63 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Home"
+        
+        //set our delegates
         self.tableView.dataSource = self
-        //self.fetchMochTweets()
+        self.tableView.delegate = self
+        
+        //register our nib for use with our tableview
+        self.tableView.registerNib(UINib(nibName: "TweetCell", bundle: NSBundle.mainBundle()), forCellReuseIdentifier: "TweetCell")
+        self.tableView.estimatedRowHeight = UITableViewAutomaticDimension
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        
+        //fetching tweets from our networkcontroller
         self.networkController.fetchUsersHomeTimeLineWithCompletionHandler { (errorDescription, tweets) -> (Void) in
             if errorDescription != nil {
                 //oh crap
             } else {
-                self.tweets = tweets!
                 NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                    self.tweets = tweets!
                     self.tableView.reloadData()
                 })
             }
         }
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        //calling reload here because of a bug with iOS8 self sizing tableivew cells
+        self.tableView.reloadData()
+    }
+    
     func fetchMochTweets () {
         let path = NSBundle.mainBundle().pathForResource("tweet", ofType: "json") as String?
         if path != nil {
             var error : NSError?
+
             let JSONData = NSData(contentsOfFile: path!)
+            
             if let JSONArray = NSJSONSerialization.JSONObjectWithData(JSONData, options: nil, error: &error) as? NSArray {
-                
-                for JSONObject in JSONArray {
-                    
-                    if let JSONDictionary = JSONObject as? NSDictionary {
-                        
-                        let tweet = Tweet(jsonDictionary: JSONDictionary)
-                        self.tweets.append(tweet)
-                    }
-                }
+                //converting the raw jsonData to an Array worked, we can now parse through it
+            } else {
+                //converting to array didnt work, oh no :(
             }
         }
     }
     
+    //our final app wont hae any segues, just pushes onto the nagivation controller
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "Show Tweet" {
+        if segue.identifier == "SHOW_TWEET" {
             
             let indexPath = self.tableView.indexPathForSelectedRow() as NSIndexPath?
             let tweet = self.tweets[indexPath!.row]
             let destinationViewController = segue.destinationViewController as TweetViewController
-            destinationViewController.selectedTweet = tweet
+            destinationViewController.selectedTweetID = "\(tweet.id)"
+            if tweet.inReplyUserIDString != nil {
+                destinationViewController.selectedReplyUserID = tweet.inReplyUserIDString
+            }
+            destinationViewController.selectedUserID = "\(tweet.userID)"
             destinationViewController.networkController = self.networkController
         }
     }
@@ -75,5 +92,17 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource {
     }
     
     
-
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let tweet = self.tweets[indexPath.row]
+        //prep our destination view controller
+        let destinationViewController = self.storyboard?.instantiateViewControllerWithIdentifier("TWEET_VC") as TweetViewController
+        destinationViewController.networkController = self.networkController
+        destinationViewController.selectedTweetID = "\(tweet.id)"
+        destinationViewController.selectedUserID = "\(tweet.userID)"
+        if tweet.inReplyUserIDString != nil {
+            destinationViewController.selectedReplyUserID = tweet.inReplyUserIDString
+    }
+        self.navigationController?.pushViewController(destinationViewController, animated: true)
+        self.tableView.reloadData()
+    }
 }

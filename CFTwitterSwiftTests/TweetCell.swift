@@ -10,8 +10,13 @@ import UIKit
 
 class TweetCell: UITableViewCell {
 
+    @IBOutlet weak var userImageView: UIImageView!
+    @IBOutlet weak var userLabel: UILabel!
+    @IBOutlet weak var tweetTextLabel: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
+        //self.tweetTextLabel.lineBreakMode = NSLineBreakMode.ByClipping
         // Initialization code
     }
 
@@ -22,7 +27,16 @@ class TweetCell: UITableViewCell {
     }
     
     func setupCell(cellTweet : Tweet) {
-        self.textLabel!.text = cellTweet.text
+
+        //println(cellTweet.text)
+        self.tweetTextLabel.text = cellTweet.text
+        self.tweetTextLabel.preferredMaxLayoutWidth = self.frame.width - 20
+       self.tweetTextLabel.layoutIfNeeded()
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        //self.tweetTextLabel.preferredMaxLayoutWidth = self.tweetTextLabel.frame.size.width
     }
 
 }
