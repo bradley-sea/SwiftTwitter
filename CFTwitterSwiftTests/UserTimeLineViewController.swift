@@ -52,13 +52,29 @@ class UserTimeLineViewController: UIViewController, UITableViewDataSource,UITabl
         self.tableView.reloadData()
     }
     
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        //calling reload here because of a bug with iOS8 self sizing tableivew cells
+        self.tableView.reloadData()
+    }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.tweets.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("TweetCell", forIndexPath: indexPath) as TweetCell
-        cell.setupCell(self.tweets[indexPath.row])
+        let tweet = self.tweets[indexPath.row]
+        cell.setupCell(tweet)
+        ++cell.tag
+        let tag = cell.tag
+        if tweet.tweetAvatarImage != nil {
+            cell.userImageView.image = tweet.tweetAvatarImage
+        } else {
+            self.networkController.fetchUserImageForURL(tweet.profileImgURL, completionHandler: { (image) -> (Void) in
+                cell.userImageView.image = image
+            })
+        }
         return cell
     }
     
@@ -74,7 +90,6 @@ class UserTimeLineViewController: UIViewController, UITableViewDataSource,UITabl
         tweetVC.networkController = self.networkController
         tweetVC.networkController = self.networkController
         self.navigationController?.pushViewController(tweetVC, animated: true)
-        self.tableView.reloadData()
     }
 
 }
