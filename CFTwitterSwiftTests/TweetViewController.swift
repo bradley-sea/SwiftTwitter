@@ -46,10 +46,10 @@ class TweetViewController: UIViewController {
         self.networkController.fetchUserForUserID(userID, completionHandler: { (errorDescription, user) -> (Void) in
             if user != nil {
                 self.user = user
-                self.networkController.fetchUserImageForURL(user!.profileImageURL, completionHandler: { (image) -> (Void) in
-                    self.userButton.setBackgroundImage(image, forState: UIControlState.Normal)
-                    self.user!.profileImage = image
-                    })
+//                self.networkController.fetchUserImageForURL(nil completionHandler: { (image) -> (Void) in
+//                    self.userButton.setBackgroundImage(image, forState: UIControlState.Normal)
+//                    self.user!.profileImage = image
+//                    })
             }
         })
     }

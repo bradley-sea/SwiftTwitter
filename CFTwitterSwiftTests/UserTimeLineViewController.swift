@@ -38,10 +38,10 @@ class UserTimeLineViewController: UIViewController, UITableViewDataSource,UITabl
                 })
             }
         })
-        self.networkController.fetchUserImageForURL(self.user.profileBackgroundImageURL, completionHandler: { (image) -> (Void) in
-            
-                self.backgroundImageView.image = image
-        })
+//        self.networkController.fetchUserImageForURL(self.user.profileBackgroundImageURL, completionHandler: { (image) -> (Void) in
+//            
+//                self.backgroundImageView.image = image
+//        })
         
         // Do any additional setup after loading the view.
     }
@@ -71,7 +71,7 @@ class UserTimeLineViewController: UIViewController, UITableViewDataSource,UITabl
         if tweet.tweetAvatarImage != nil {
             cell.userImageView.image = tweet.tweetAvatarImage
         } else {
-            self.networkController.fetchUserImageForURL(tweet.profileImgURL, completionHandler: { (image) -> (Void) in
+            self.networkController.fetchUserImageForTweet(tweet, completionHandler: { (image) -> (Void) in
                 cell.userImageView.image = image
             })
         }

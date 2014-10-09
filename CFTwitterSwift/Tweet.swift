@@ -20,6 +20,7 @@ class Tweet {
     let userID : Int
     let inReplyUserIDString : String?
     var tweetAvatarImage : UIImage?
+    var imageIsDownloading = false
     
     init(jsonDictionary : NSDictionary) {
         self.text = jsonDictionary["text"] as String

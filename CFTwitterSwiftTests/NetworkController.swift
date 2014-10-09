@@ -19,6 +19,10 @@ class TwitterNetworkController {
     var imageQueue = NSOperationQueue()
     
     init() {
+        var fifty = 51
+        var str = fifty.description
+        self.imageQueue.maxConcurrentOperationCount = 1
+        
         //must have init because we have an optional property now?
     }
     
@@ -151,14 +155,15 @@ class TwitterNetworkController {
     }
     
     
-    func fetchUserImageForURL(urlString : String, completionHandler : (image : UIImage) -> (Void)) {
-        
-        var url = NSURL(string: urlString)
-        
+    func fetchUserImageForTweet(tweet : Tweet, completionHandler : (image : UIImage) -> (Void)) {
+        tweet.imageIsDownloading = true
+        var url = NSURL(string: tweet.profileImgURL)
         self.imageQueue.addOperationWithBlock { () -> Void in
             var data = NSData(contentsOfURL: url)
             var image = UIImage(data: data)
             NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                tweet.tweetAvatarImage = image
+                tweet.imageIsDownloading = false
                 completionHandler(image: image)
             })
         }

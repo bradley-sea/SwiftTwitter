@@ -94,14 +94,13 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource, UITab
         let cell = tableView.dequeueReusableCellWithIdentifier("TweetCell", forIndexPath: indexPath) as TweetCell
         let tweet = self.tweets[indexPath.row]
         cell.setupCell(self.tweets[indexPath.row])
-        ++cell.tag
-        let tag = cell.tag
         //cell.userImageView.image = nil
         if tweet.tweetAvatarImage != nil {
             cell.userImageView.image = tweet.tweetAvatarImage
-        } else {
-            self.networkController.fetchUserImageForURL(tweet.profileImgURL, completionHandler: { (image) -> (Void) in
-                cell.userImageView.image = image
+        } else if tweet.imageIsDownloading == false {
+        self.networkController.fetchUserImageForTweet(tweet, completionHandler: { (image) -> (Void) in
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as? TweetCell
+                cell?.userImageView.image = image
             })
         }
         return cell
@@ -119,6 +118,29 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource, UITab
             destinationViewController.selectedReplyUserID = tweet.inReplyUserIDString
     }
         self.navigationController?.pushViewController(destinationViewController, animated: true)
-       
     }
+
+    func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+    }
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        println(indexPath.row)
+        
+        
+        
+        for var i = indexPath.row + 3; i > indexPath.row; i-- {
+            
+            if i < self.tweets.count {
+            let tweet = self.tweets[i]
+                if tweet.tweetAvatarImage == nil && !tweet.imageIsDownloading {
+            self.networkController.fetchUserImageForTweet(tweet, completionHandler: { (image) -> (Void) in
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as? TweetCell
+                cell?.userImageView.image = image
+                    })
+                }
+            }
+        }
+    }
+    
 }
