@@ -51,6 +51,7 @@ class HomeTimeLineViewController: UIViewController, UITableViewDataSource, UITab
         super.viewWillDisappear(animated)
          //calling reload here because of a bug with iOS8 self sizing tableivew cells
         self.tableView.reloadData()
+        println("goodbye")
     }
     
     func fetchMochTweets () {
